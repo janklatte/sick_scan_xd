@@ -387,7 +387,12 @@ void sick_scansegment_xd::RosMsgpackPublisher::HandleMsgPackData(const sick_scan
                     m_scan_time = (msgpack_data.timestamp_sec + 1.0e-9 * msgpack_data.timestamp_nsec) - (m_points_collector.timestamp_sec + 1.0e-9 * m_points_collector.timestamp_nsec);
                     LaserScanMsgMap laser_scan_msg_map; // laser_scan_msg_map[echo][layer] := LaserScan message given echo (Multiscan136: max 3 echos) and layer index (Multiscan136: 16 layer)
 					PointCloud2Msg pointcloud_msg, pointcloud_msg_polar;
-					convertPointsToCloud(m_points_collector.timestamp_sec, m_points_collector.timestamp_nsec, m_points_collector.lidar_points, m_points_collector.total_point_count, 
+
+          // HACK to test if sync issue belongs to timestamps from sensors
+          const uint32_t timestamp_sec = this->get_clock()->now().seconds(); // m_points_collector.timestamp_sec
+          const uint32_t timestamp_nsec = this->get_clock()->now().nanoseconds(); //  m_points_collector.timestamp_nsec
+
+					convertPointsToCloud(timestamp_sec, timestamp_nsec, m_points_collector.lidar_points, m_points_collector.total_point_count,
 					    pointcloud_msg, pointcloud_msg_polar, laser_scan_msg_map, true);
 					publish(m_node, m_publisher_all_segments, pointcloud_msg, pointcloud_msg_polar, m_publisher_laserscan_360, laser_scan_msg_map, 
 					    std::max(1, (int)echo_count), -1); // pointcloud, number of echos, segment index (or -1 if pointcloud contains data from multiple segments)
