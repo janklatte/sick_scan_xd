@@ -89,6 +89,10 @@ sick_scansegment_xd::RosMsgpackPublisher::RosMsgpackPublisher(const std::string&
     int qos_val = -1;
     rosDeclareParam(m_node, "ros_qos", qos_val);
     rosGetParam(m_node, "ros_qos", qos_val);
+
+    // HACK to test if message drops are caused by QoS Settings
+    qos = rclcpp::QoS(10);
+
     if (qos_val >= 0)
         qos = qos_converter.convert(qos_val);
 	m_points_collector = SegmentPointsCollector(m_segment_count);
