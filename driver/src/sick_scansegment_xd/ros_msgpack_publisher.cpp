@@ -393,9 +393,9 @@ void sick_scansegment_xd::RosMsgpackPublisher::HandleMsgPackData(const sick_scan
 					PointCloud2Msg pointcloud_msg, pointcloud_msg_polar;
 					convertPointsToCloud(m_points_collector.timestamp_sec, m_points_collector.timestamp_nsec, m_points_collector.lidar_points, m_points_collector.total_point_count, 
 					    pointcloud_msg, pointcloud_msg_polar, laser_scan_msg_map, true);
+                                        RCLCPP_INFO(m_node->get_logger(), "Publish cloud_360 with ts: %f", rclcpp::Time(pointcloud_msg.header.stamp).seconds());
 					publish(m_node, m_publisher_all_segments, pointcloud_msg, pointcloud_msg_polar, m_publisher_laserscan_360, laser_scan_msg_map, 
 					    std::max(1, (int)echo_count), -1); // pointcloud, number of echos, segment index (or -1 if pointcloud contains data from multiple segments)
-                                        RCLCPP_INFO(m_node->get_logger(), "Published cloud_360 with ts: %f", rclcpp::Time(pointcloud_msg.header.stamp).seconds());
                                         // ROS_INFO_STREAM("RosMsgpackPublisher::HandleMsgPackData(): cloud_360 published, " << m_points_collector.total_point_count << " points, " << pointcloud_msg.data.size() << " byte, "
 					//     << m_points_collector.segment_list.size() << " segments (" << sick_scansegment_xd::util::printVector(m_points_collector.segment_list, ",") << "), "
 					//     << m_points_collector.telegram_list.size() << " telegrams (" << sick_scansegment_xd::util::printVector(m_points_collector.telegram_list, ",") << "), "
