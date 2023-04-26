@@ -38,6 +38,9 @@ endif()
 # Debug or Release build options
 option(BUILD_DEBUG_TARGET "Build debug target (ON) or release (OFF)" ON) # OFF (release) or ON (development)
 
+# Disable/enable diagnostics updater
+option(DIAGNOSTICS_UPDATER_ENABLED "Enable diagnostics updater (ON) or disable it (OFF)" ON)
+
 # set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 # set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic")
 # if(NOT WIN32) # Note: compiler option -Wshadow generates lots of warnings in ros header files. Therefore it's deactivated by default, but can be usefull for development and testing.
@@ -194,7 +197,9 @@ if(ROS_VERSION EQUAL 1)
         SickScanExitSrv.srv
     )
     set(diagnostic_updater_pkg diagnostic_updater)
-    add_compile_options(-DROS_DIAGNOSTICS_UPDATER_AVAILABLE)
+    if(${DIAGNOSTICS_UPDATER_ENABLED} OR DIAGNOSTICS_UPDATER_ENABLED EQUAL ON)
+        add_compile_options(-DROS_DIAGNOSTICS_UPDATER_AVAILABLE)
+    endif()
 endif(ROS_VERSION EQUAL 1)
 
 if(ROS_VERSION EQUAL 2)
@@ -207,8 +212,10 @@ if(ROS_VERSION EQUAL 2)
         # still check if diagnostics updater is available (depends on ros distribution)
         find_package(diagnostic_updater)
         if (${diagnostic_updater_FOUND})
-            set(diagnostic_updater_pkg diagnostic_updater)
-            add_compile_options(-DROS_DIAGNOSTICS_UPDATER_AVAILABLE)
+            if(${DIAGNOSTICS_UPDATER_ENABLED} OR DIAGNOSTICS_UPDATER_ENABLED EQUAL ON)
+                set(diagnostic_updater_pkg diagnostic_updater)
+                add_compile_options(-DROS_DIAGNOSTICS_UPDATER_AVAILABLE)
+            endif()
         endif()
     endif()
     find_package(rclcpp REQUIRED)
